@@ -1068,7 +1068,8 @@ module Geos
       # Checks to see if we actually have the GEOS library loaded.
       FFIGeos.GEOSversion
     rescue LoadError, NoMethodError
-      raise LoadError, "Couldn't load the GEOS CAPI library."
+      puts 'Potential issue loading GEOS.... detected'
+#       raise LoadError, "Couldn't load the GEOS CAPI library."
     end
   end
 
