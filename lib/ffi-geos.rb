@@ -63,8 +63,11 @@ module Geos
 
     def self.find_lib(lib)
       if ENV['GEOS_LIBRARY_PATH'] && File.file?(ENV['GEOS_LIBRARY_PATH'])
+        puts '----- In Find Lib - Using Env Variable ----- ' 
+        puts ENV['GEOS_LIBRARY_PATH']
         ENV['GEOS_LIBRARY_PATH']
       else
+        puts '-------- Could not find ENV Variable -------- ' 
         Dir.glob(search_paths.map { |path|
           File.expand_path(File.join(path, "#{lib}.#{FFI::Platform::LIBSUFFIX}{,.?}"))
         }).first
@@ -72,15 +75,21 @@ module Geos
     end
 
     def self.geos_library_path
+      puts '----- Calling geos_library_path ----- ' 
+      
       @geos_library_path ||= begin
         # On MingW the libraries have version numbers
+        puts find_lib('{lib,}geos_c{,-?}').to_s
         find_lib('{lib,}geos_c{,-?}')
+
       end
     end
 
     # For backwards compatibility with older ffi-geos versions where this
     # used to return an Array.
     def self.geos_library_paths
+      puts 'calling geos_library_paths'
+      puts [ geos_library_path ]
       [ geos_library_path ]
     end
 
@@ -1052,6 +1061,8 @@ module Geos
     }.freeze
 
     begin
+      puts '----- Geos Library Path ----- ' 
+      puts geos_library_path
       ffi_lib(geos_library_path)
 
       FFI_LAYOUT.each do |func, ary|
@@ -1068,8 +1079,7 @@ module Geos
       # Checks to see if we actually have the GEOS library loaded.
       FFIGeos.GEOSversion
     rescue LoadError, NoMethodError
-      puts 'Potential issue loading GEOS.... detected'
-#       raise LoadError, "Couldn't load the GEOS CAPI library."
+      raise LoadError, "Couldn't load the GEOS CAPI library."
     end
   end
 
